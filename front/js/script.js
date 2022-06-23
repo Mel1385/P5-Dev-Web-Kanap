@@ -19,16 +19,14 @@ async function displayProducts() {
     const products = await getAllProducts();
     products.forEach((product) => {
         const items = document.getElementById("items");
-        anchor = document.createElement("a");
-        article = document.createElement("article");
-        article.classList.add("article");
-        img = document.createElement("img");
-        img.classList.add("productImage");
+        const anchor = document.createElement("a");
+        const article = document.createElement("article");
+        const img = document.createElement("img");
         img.alt = product.altTxt;
-        title = document.createElement("h3");
+        const title = document.createElement("h3");
         title.classList.add("productName");
-        description = document.createElement("p");
-        description.classList.add("productDescription");
+        const description = document.createElement("p");
+
 
         // Append elements to another element
         items.appendChild(anchor);
@@ -44,4 +42,9 @@ async function displayProducts() {
         title.innerHTML = product.name;
         description.innerHTML = product.description;
     });
+}
+const createHtmlElement = (type, htmlClass) => {
+    const elements = document.createElement(type);
+    elements.classList.add(htmlClass);
+    return elements
 }

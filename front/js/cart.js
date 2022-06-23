@@ -140,103 +140,80 @@ function sendForm() {
             email: document.getElementById("email").value,
         };
 
-        console.log(contact);
-
-        function formFirstName() {
-            // REGEX for the first name and validate the conditions of the imputs
-            const validFirstName = contact.firstName;
-            let regExpFirstName =
-                /^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/.test(validFirstName);
-            if (regExpFirstName) {
-                document.querySelector("#firstNameErrorMsg").innerHTML = "";
-                return true;
-            } else {
-                let firstNameErrorMsg = document.getElementById("firstNameErrorMsg");
-                firstNameErrorMsg.innerHTML =
-                    "Votre prénom doit contenir entre 3 et 20 caractères";
+        const contactForm = {
+            firstname: {
+                selector: "firstName",
+                regex: /^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/,
+                errorMsg: "Votre prénom doit contenir entre 3 et 20 caractères"
+            },
+            lastname: {
+                selector: "lastName",
+                regex: /^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/,
+                errorMsg: "Votre nom doit contenir entre 3 et 20 caractères"
+            },
+            address: {
+                selector: "address",
+                regex: /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/,
+                errorMsg: "Votre adresse est invalide"
+            },
+            city: {
+                selector: "city",
+                regex: /^[a-zA-Zàâäéèêëïîôöùûüç]+(?:[- ][a-zA-Zàâäéèêëïîôöùûüç]+)*$/,
+                errorMsg: "Votre ville est invalide"
+            },
+            email: {
+                selector: "email",
+                regex: /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/,
+                errorMsg: "Votre email est invalide"
             }
         }
 
-        function formLastName() {
-            // REGEX for the last name and validate the conditions of the inputs
-            const validLastName = contact.lastName;
-            let regExpLastName =
-                /^[^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,20}$/.test(validLastName);
-            if (regExpLastName) {
-                document.querySelector("#lastNameErrorMsg").innerHTML = "";
+        console.log('contactForm', contactForm);
+
+
+        function fieldValidator(field) {
+            console.log('field', field);
+
+            const fieldToValidate = document.getElementById(field.selector).value;
+            const regexForValidation =
+                field.regex.test(fieldToValidate);
+            const errorMsgSelector = "#" + field.selector + "ErrorMsg";
+
+
+            if (regexForValidation) {
+                document.querySelector(errorMsgSelector).innerHTML = "";
                 return true;
             } else {
-                let lastNameErrorMsg = document.getElementById("lastNameErrorMsg");
-                lastNameErrorMsg.innerHTML =
-                    "Votre nom doit contenir entre 3 et 20 caractères";
+                let firstNameErrorMsg = document.getElementById(field.selector + "ErrorMsg");
+                firstNameErrorMsg.innerHTML = field.errorMsg;
+                return false;
             }
         }
 
-        function formAddress() {
-            // REGEX for the address and validate the conditions of the inputs
-            const validAddress = contact.address;
-            let regExpAddress =
-                /^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/.test(
-                    validAddress
-                );
-            if (regExpAddress) {
-                document.querySelector("#addressErrorMsg").innerHTML = "";
-                return true;
-            } else {
-                let addressErrorMsg = document.getElementById("addressErrorMsg");
-                addressErrorMsg.innerHTML = "Votre adresse est invalide.";
-            }
-        }
-
-        function formCity() {
-            // REGEX for the city and validate the conditions of the inputs
-            const validCity = contact.city;
-            let regExpCity =
-                /^[a-zA-Zàâäéèêëïîôöùûüç]+(?:[- ][a-zA-Zàâäéèêëïîôöùûüç]+)*$/.test(
-                    validCity
-                );
-            if (regExpCity) {
-                document.querySelector("#cityErrorMsg").innerHTML = "";
-                return true;
-            } else {
-                let cityErrorMsg = document.getElementById("cityErrorMsg");
-                cityErrorMsg.innerHTML = "Votre ville est invalide.";
-            }
-        }
-
-        function formEmail() {
-            // REGEX for email and validate the conditions of the inputs
-            const validEmail = contact.email;
-            let regExpEmail =
-                /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/.test(
-                    validEmail
-                );
-            if (regExpEmail) {
-                document.querySelector("#emailErrorMsg").innerHTML = "";
-                return true;
-            } else {
-                let emailErrorMsg = document.getElementById("emailErrorMsg");
-                emailErrorMsg.innerHTML = "Votre email est invalide.";
-            }
-        }
 
         function formValidation() {
             // if the form is correctly filled, it will create a item "contact" in the localStorage
-            if (
-                formFirstName() === true &&
-                formLastName() === true &&
-                formAddress() === true &&
-                formCity() === true &&
-                formEmail() === true
-            ) {
-                localStorage.setItem("contact", JSON.stringify(contact));
-                return true;
-            } else {
+
+            let errorFound = false;
+            for (let field in contactForm) {
+
+                if (fieldValidator(contactForm[field]) === false) {
+                    errorFound = true;
+                };
+            }
+
+            if (errorFound) {
                 event.preventDefault();
                 alert("Merci de remplir correctement le formulaire");
+                return false;
+            } else {
+                localStorage.setItem("contact", JSON.stringify(contact));
+                return true;
             }
+
+
         }
-        formValidation();
+
 
         // Array from the localStorage to send it to the server
         let products = [];
