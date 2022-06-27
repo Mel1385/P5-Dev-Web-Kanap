@@ -168,11 +168,10 @@ function sendForm() {
             }
         }
 
-        console.log('contactForm', contactForm);
+
 
 
         function fieldValidator(field) {
-            console.log('field', field);
 
             const fieldToValidate = document.getElementById(field.selector).value;
             const regexForValidation =
